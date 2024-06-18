@@ -8,13 +8,17 @@
     "start:local": "ts-node-dev --transpile-only src/index.ts",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
-    "test:e2e": "jest --projects ./test --forceExit --runInBand"
+    "test:functional": "jest --projects ./test --forceExit --runInBand"
   },
   "author": "Matheus Gomes",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "module-alias": "^2.2.3"
+    "@overnightjs/core": "^1.7.6",
+    "@types/express": "^4.17.13",
+    "body-parser": "^1.19.1",
+    "express": "^4.17.2",
+    "module-alias": "^2.2.2"
   },
   "devDependencies": {
     "@types/jest": "^27.0.3",
