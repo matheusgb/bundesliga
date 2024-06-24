@@ -8,6 +8,8 @@
     "start:local": "ts-node-dev --transpile-only src/index.ts",
     "lint": "eslint ./src ./test --ext .ts",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
+    "style:check": "prettier --check 'src/**/*.ts' 'test/**/*.ts'",
+    "style:fix": "prettier --write 'src/**/*.ts' 'test/**/*.ts'",
     "test:functional": "jest --projects ./test --forceExit --runInBand"
   },
   "author": "Matheus Gomes",
@@ -24,6 +26,7 @@
     "@types/jest": "^27.0.3",
     "@types/module-alias": "^2.0.1",
     "@types/node": "16",
+    "prettier": "^2.5.1",
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^5.8.1",
     "@typescript-eslint/parser": "^5.8.1",

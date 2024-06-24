@@ -1,8 +1,8 @@
-import bodyParser from "body-parser";
-import "./util/moduleAlias";
-import { Server } from "@overnightjs/core";
-import { StandingsController } from "./controllers/standings";
-import { Application } from "express";
+import bodyParser from 'body-parser';
+import './util/moduleAlias';
+import { Server } from '@overnightjs/core';
+import { StandingsController } from './controllers/standings';
+import { Application } from 'express';
 
 export class SetupServer extends Server {
   constructor(private port = 3000) {
