@@ -7,7 +7,9 @@ jest.mock('axios');
 
 describe('FootballData client', () => {
   it('should return normalized standings of 2023/24 season from football-data service', async () => {
-    axios.get = jest.fn().mockResolvedValue(footballDataStandingsFixture);
+    axios.get = jest
+      .fn()
+      .mockResolvedValue({ data: footballDataStandingsFixture });
 
     const footballData = new FootballData(axios);
     const response = await footballData.fetchStandings();
