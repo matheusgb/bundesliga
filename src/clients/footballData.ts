@@ -1,4 +1,5 @@
-import { AxiosStatic } from 'axios';
+import { InternalError } from '@src/util/errors/internalError';
+import { AxiosError, AxiosStatic } from 'axios';
 
 export interface Filters {
   season: string;
@@ -93,35 +94,65 @@ interface BundesligaNormalizedData {
   points: number;
 }
 
+export class ClientRequestError extends InternalError {
+  constructor(message: string) {
+    const internalMessage =
+      'Unexpected error when trying to comunicate to football-data service';
+    super(`${internalMessage}: ${message}`);
+  }
+}
+
+export class FootballDataResponseError extends InternalError {
+  constructor(status: string) {
+    const internalMessage =
+      'Unexpected error returned by football-data service';
+    super(`${internalMessage}: ${status}`);
+  }
+}
+
 export class FootballData {
-  readonly footballDataSeason = '2023';
+  private readonly footballDataSeason = '2023';
 
   constructor(protected request: AxiosStatic) {}
 
   public async fetchStandings(): Promise<BundesligaNormalizedData[]> {
-    const response = await this.request.get<BundesligaData>(
-      `https://api.football-data.org/v4/competitions/BL1/standings/?season=${this.footballDataSeason}`
-    );
-    return this.normalizeResponse(response.data);
+    try {
+      const response = await this.request.get<BundesligaData>(
+        `https://api.football-data.org/v4/competitions/BL1/standings/?season=${this.footballDataSeason}`,
+        {
+          headers: {
+            Authorization: 'token',
+            'X-Auth-Token': '',
+          },
+        }
+      );
+      return this.normalizeResponse(response.data);
+    } catch (err) {
+      const axiosError = err as AxiosError;
+      if (axiosError instanceof Error && axiosError.response?.status) {
+        throw new FootballDataResponseError(`${axiosError.response?.status}`);
+      }
+      throw new ClientRequestError(axiosError.message);
+    }
   }
 
   private normalizeResponse(
     bundesliga: BundesligaData
   ): BundesligaNormalizedData[] {
-    const standing = bundesliga.standings.find(
+    const standing = bundesliga?.standings.find(
       (standing) =>
         standing.stage === 'REGULAR_SEASON' && standing.type === 'TOTAL'
     );
 
     const teams =
-      standing?.table.filter(
+      standing?.table?.filter(
         (position) =>
           position.team.shortName === 'Leverkusen' ||
           position.team.shortName === 'Darmstadt'
-      ) || [];
+      ) ?? [];
 
     const normalizedTeams: BundesligaNormalizedData[] =
-      teams?.map((club) => ({
+      teams.map((club) => ({
         position: club.position,
         team: {
           name: club.team.name,
