@@ -6,12 +6,11 @@ import footballDataNormalizedStandingsFixture from '@test/fixtures/footballDataN
 jest.mock('axios');
 
 describe('FootballData client', () => {
+  const mockedAxios = axios as jest.Mocked<typeof axios>;
   it('should return normalized standings of 2023/24 season from football-data service', async () => {
-    axios.get = jest
-      .fn()
-      .mockResolvedValue({ data: footballDataStandingsFixture });
+    mockedAxios.get.mockResolvedValue({ data: footballDataStandingsFixture });
 
-    const footballData = new FootballData(axios);
+    const footballData = new FootballData(mockedAxios);
     const response = await footballData.fetchStandings();
     expect(response).toEqual(footballDataNormalizedStandingsFixture);
   });
