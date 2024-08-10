@@ -92,6 +92,7 @@ interface BundesligaNormalizedData {
   lost: number;
   points: number;
 }
+
 export class FootballData {
   readonly footballDataSeason = '2023';
 
@@ -107,35 +108,32 @@ export class FootballData {
   private normalizeResponse(
     bundesliga: BundesligaData
   ): BundesligaNormalizedData[] {
-    const leverkusen = bundesliga.standings[0].table[0];
-    const darmstadt = bundesliga.standings[0].table[17];
+    const standing = bundesliga.standings.find(
+      (standing) =>
+        standing.stage === 'REGULAR_SEASON' && standing.type === 'TOTAL'
+    );
 
-    const normalizedLeverkusen: BundesligaNormalizedData = {
-      position: leverkusen.position,
-      team: {
-        name: leverkusen.team.name,
-        crest: leverkusen.team.crest,
-      },
-      playedGames: leverkusen.playedGames,
-      won: leverkusen.won,
-      draw: leverkusen.draw,
-      lost: leverkusen.lost,
-      points: leverkusen.points,
-    };
+    const teams =
+      standing?.table.filter(
+        (position) =>
+          position.team.shortName === 'Leverkusen' ||
+          position.team.shortName === 'Darmstadt'
+      ) || [];
 
-    const normalizedDarmstadt: BundesligaNormalizedData = {
-      position: darmstadt.position,
-      team: {
-        name: darmstadt.team.name,
-        crest: darmstadt.team.crest,
-      },
-      playedGames: darmstadt.playedGames,
-      won: darmstadt.won,
-      draw: darmstadt.draw,
-      lost: darmstadt.lost,
-      points: darmstadt.points,
-    };
+    const normalizedTeams: BundesligaNormalizedData[] =
+      teams?.map((club) => ({
+        position: club.position,
+        team: {
+          name: club.team.name,
+          crest: club.team.crest,
+        },
+        playedGames: club.playedGames,
+        won: club.won,
+        draw: club.draw,
+        lost: club.lost,
+        points: club.points,
+      })) || [];
 
-    return [normalizedLeverkusen, normalizedDarmstadt];
+    return normalizedTeams;
   }
 }
