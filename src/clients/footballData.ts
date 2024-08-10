@@ -1,5 +1,7 @@
 import { InternalError } from '@src/util/errors/internalError';
-import { AxiosError, AxiosStatic } from 'axios';
+import config, { IConfig } from 'config';
+import * as HTTPUtil from '@src/util/request';
+import { AxiosError } from 'axios';
 
 export interface Filters {
   season: string;
@@ -110,26 +112,31 @@ export class FootballDataResponseError extends InternalError {
   }
 }
 
+const footballDataResourceConfig: IConfig = config.get(
+  'App.resources.FootballData'
+);
+
 export class FootballData {
   private readonly footballDataSeason = '2023';
 
-  constructor(protected request: AxiosStatic) {}
+  constructor(protected request = new HTTPUtil.Request()) {}
 
   public async fetchStandings(): Promise<BundesligaNormalizedData[]> {
     try {
       const response = await this.request.get<BundesligaData>(
-        `https://api.football-data.org/v4/competitions/BL1/standings/?season=${this.footballDataSeason}`,
+        `${footballDataResourceConfig.get(
+          'apiUrl'
+        )}/competitions/BL1/standings/?season=${this.footballDataSeason}`,
         {
           headers: {
-            Authorization: 'token',
-            'X-Auth-Token': '',
+            'X-Auth-Token': footballDataResourceConfig.get('apiToken'),
           },
         }
       );
       return this.normalizeResponse(response.data);
     } catch (err) {
       const axiosError = err as AxiosError;
-      if (axiosError instanceof Error && axiosError.response?.status) {
+      if (HTTPUtil.Request.isRequestError(axiosError)) {
         throw new FootballDataResponseError(`${axiosError.response?.status}`);
       }
       throw new ClientRequestError(axiosError.message);
