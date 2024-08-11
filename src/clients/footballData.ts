@@ -86,7 +86,7 @@ interface NormalizedTeam {
   crest: string;
 }
 
-interface BundesligaNormalizedData {
+export interface BundesligaNormalizedData {
   position: number;
   team: NormalizedTeam;
   playedGames: number;
