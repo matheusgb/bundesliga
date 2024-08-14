@@ -6,17 +6,27 @@ import { AddPerformanceField } from '@src/services/standings';
 jest.mock('@src/clients/footballData');
 
 describe('Standings Service', () => {
+  const mockedFootballDataService =
+    new FootballData() as jest.Mocked<FootballData>;
   it('should return the standings with performance field', async () => {
-    FootballData.prototype.fetchStandings = jest
-      .fn()
-      .mockResolvedValue(footballDataNormalizedStandingsFixture);
+    mockedFootballDataService.fetchStandings.mockResolvedValue(
+      footballDataNormalizedStandingsFixture
+    );
 
-    const performance = new AddPerformanceField(new FootballData());
+    const performance = new AddPerformanceField(mockedFootballDataService);
     const teamsWithPerformanceField =
       await performance.calculatePerformanceField();
 
     expect(teamsWithPerformanceField).toEqual(
       standingsServiceExpectedResponseFixture
     );
+  });
+
+  it('should return a empty list when the standings array is empty', async () => {
+    mockedFootballDataService.fetchStandings.mockResolvedValue([]);
+    const performance = new AddPerformanceField(mockedFootballDataService);
+
+    const response = await performance.calculatePerformanceField();
+    expect(response).toEqual([]);
   });
 });
