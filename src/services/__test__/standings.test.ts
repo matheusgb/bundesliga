@@ -12,7 +12,6 @@ describe('Standings Service', () => {
     mockedFootballDataService.fetchStandings.mockResolvedValue(
       footballDataNormalizedStandingsFixture
     );
-
     const performance = new AddPerformanceField(mockedFootballDataService);
     const teamsWithPerformanceField =
       await performance.calculatePerformanceField();
@@ -28,5 +27,13 @@ describe('Standings Service', () => {
 
     const response = await performance.calculatePerformanceField();
     expect(response).toEqual([]);
+  });
+
+  it('should throw internal processing error when something goes wrong in performance calculation', async () => {
+    mockedFootballDataService.fetchStandings.mockRejectedValue(
+      'Error fetching data'
+    );
+    const performance = new AddPerformanceField(mockedFootballDataService);
+    expect(performance.calculatePerformanceField()).rejects.toThrow();
   });
 });
