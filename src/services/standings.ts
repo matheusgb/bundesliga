@@ -13,14 +13,18 @@ export class AddPerformanceField {
   public async calculatePerformanceField(): Promise<
     footballDataWithPerformance[]
   > {
-    const teams = await this.footballData.fetchStandings();
-    const teamsWithPerformanceField = teams.map((team) => {
-      const performance = (team.points / (team.playedGames * 3)) * 100;
-      return {
-        ...team,
-        performance: parseFloat(performance.toFixed(2)),
-      };
-    });
-    return teamsWithPerformanceField;
+    try {
+      const teams = await this.footballData.fetchStandings();
+      const teamsWithPerformanceField = teams.map((team) => {
+        const performance = (team.points / (team.playedGames * 3)) * 100;
+        return {
+          ...team,
+          performance: parseFloat(performance.toFixed(2)),
+        };
+      });
+      return teamsWithPerformanceField;
+    } catch (error) {
+      throw new Error(error as string);
+    }
   }
 }
