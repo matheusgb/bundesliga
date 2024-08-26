@@ -2,7 +2,7 @@
   "App": {
     "resources": {
       "FootballData": {
-        "apiToken": "test-token"
+        "apiToken": "YOUR-TOKEN-HERE"
       }
     }
   }

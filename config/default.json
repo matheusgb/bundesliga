@@ -3,7 +3,7 @@
     "resources": {
       "FootballData": {
         "apiUrl": "https://api.football-data.org/v4",
-        "apiToken": "token"
+        "apiToken": "YOUR-TOKEN-HERE"
       }
     }
   }
