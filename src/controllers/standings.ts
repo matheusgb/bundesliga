@@ -1,37 +1,13 @@
 import { Controller, Get } from '@overnightjs/core';
+import { AddPerformanceField } from '@src/services/standings';
 import { Request, Response } from 'express';
 
 @Controller('standings')
 export class StandingsController {
   @Get('')
-  public getStandings(_: Request, res: Response): void {
-    res.send([
-      {
-        position: 1,
-        team: {
-          name: 'Bayer 04 Leverkusen',
-          crest: 'https://crests.football-data.org/3.png',
-        },
-        playedGames: 34,
-        won: 28,
-        draw: 6,
-        lost: 0,
-        points: 90,
-        performance: 88.24,
-      },
-      {
-        position: 18,
-        team: {
-          name: 'SV Darmstadt 98',
-          crest: 'https://crests.football-data.org/55.png',
-        },
-        playedGames: 34,
-        won: 3,
-        draw: 8,
-        lost: 23,
-        points: 17,
-        performance: 16.67,
-      },
-    ]);
+  public async getStandings(_: Request, res: Response) {
+    const performanceService = new AddPerformanceField();
+    const response = await performanceService.calculatePerformanceField();
+    res.send(response);
   }
 }
