@@ -25,5 +25,8 @@ export class SetupServer extends Server {
   public init(): void {
     this.setupExpress();
     this.setupControllers();
+    this.app.listen(this.port, () => {
+      console.log('Server listening on port: ' + this.port);
+    });
   }
 }
